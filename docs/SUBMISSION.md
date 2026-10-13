@@ -46,3 +46,7 @@
 ## Known scope limits
 
 Only 385 of 1,873 selected public records met the conservative extraction rules. That is documented rather than presented as the original 2,000 target. The resulting 62/323 year split is biased by extraction success. All completeness indicators remain false. Synthetic benchmark success does not establish natural legal-error performance, legal meaning, ratio/obiter, speaker attribution or continuing precedent. The local Python server is a demonstration, not a public production deployment.
+
+## GitHub delivery verification
+
+The repository was created private and its default branch is `phase-2`. The initial delivery commit `8e311b98889dddab911330aa4c42b790a1579efe` was read back through `git ls-remote` and matched the local commit. The uploaded PDF blob was separately read back and matched `git hash-object report/Final_Report.pdf`. A clean export of the exact committed package, without download/model caches, passed all 66 tests and 16 subtests, generated the report tables with matching corpus/code hashes, and ran the real consistent CLI example. No institutional portal submission was performed.

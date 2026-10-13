@@ -17,4 +17,4 @@ Firecrawl only for searches. No fabricated results or legal conclusions. No API 
 - [x] Evaluation: split judgment IDs development/test 30/70 before mutation; compare existence-only, literal-quote, normalized-quote and full pipeline on identical held-out cases; validation-only tuning; retain per-case predictions. Synthetic corruption results are not real-world accuracy.
 - [x] GPU: compare optional MiniLM dense paragraph retrieval with BM25 on held-out candidates/queries; record hardware, cache revision, times and truncation limits.
 - [x] Report: verify 18–20 scholarly references, correct unsupported Phase 1 claims, cover rubric, produce editable source and reproducible PDF builder; verify 6–7 pages and citation coverage.
-- [ ] Delivery: full tests, CLI, HTTP smoke and report checks; secret review; initialize feature branch, commit, create private repository via gh, push, verify remote SHA. Record link and submission checklist.
+- [x] Delivery: full tests, CLI, HTTP smoke and report checks; secret review; initialize feature branch, commit, create private repository via gh, push, verify remote SHA. Record link and submission checklist.
