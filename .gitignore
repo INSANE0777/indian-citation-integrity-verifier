@@ -1,0 +1,19 @@
+.cache/
+.firecrawl/
+.artifacts/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+.env*
+/.claude/
+/Mini Project*.pdf
+/Phase1*.pdf
+/report/*.log
+/report/*.aux
+/report/*.out
+/report/main.pdf
+*.whl

@@ -1,0 +1,164 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,booktabs,graphicx,url,array}
+\usepackage[hidelinks]{hyperref}
+\title{Verifying AI-Generated Legal Citations Against Indian Case Law: An Evidence-First Integrity Pipeline}
+\author{\IEEEauthorblockN{Afjal Hussein, Ayush Kumar, Arush Sharma}
+\IEEEauthorblockA{S24BCAU0171, S24BCAU0103, S24BCAU0161\\
+Department of Computer Science Engineering \& Technology\\Bennett University, India\\
+CSET485---AI and Society, Phase 2\\Team ID: not supplied in the source material}}
+\begin{document}
+\maketitle
+\input{measurements.tex}
+\begin{abstract}
+Generative legal research can produce plausible citations while attaching inaccurate quotations, incorrect court information, or unsupported pinpoints. This project implements a local, evidence-first verifier for a bounded collection of Indian Supreme Court judgments. The system resolves metadata-backed citation aliases, compares court and bench fields, checks original paragraph identifiers, searches for contiguous normalized quotations, and exposes nearby qualifying language for human review. It separates textual consistency from legal entailment and treats an absent local citation as unresolved rather than fabricated. A reproducible acquisition process obtains public judgment PDFs and metadata, records source URLs and SHA-256 hashes, and rejects unusable extractions. Experiments use \CorpusCount{} retained judgments and judgment-disjoint development and test partitions. Controlled mutations yield \TestCount{} held-out verification requests. On this semi-synthetic triage task, the complete pipeline obtains an F1 score of \FullFone{}, compared with \ExistFone{} for citation-existence checking. These measurements concern automatically constructed discrepancies, not the prevalence of hallucinations in actual litigation. A separate retrieval experiment compares lexical ranking with pretrained sentence embeddings on the available GPU. The implementation, test suite, local browser demonstration, per-request predictions, and editable report source are delivered together. The contribution is an inspectable workflow that reduces repetitive checking without representing a successful lookup as a legal conclusion.
+\end{abstract}
+\begin{IEEEkeywords}
+legal citation verification, Indian case law, information retrieval, quotation integrity, hallucination detection, responsible AI
+\end{IEEEkeywords}
+
+\section{Introduction}
+Legal citations make actionable claims about sources. A citation identifies an authority, a pinpoint directs the reader to particular text, and a quotation represents what that authority said. These claims can fail independently. A judgment may exist but have been issued by a different court. Its text may contain a similar sentence while differing in a negation, amount, or condition. A passage may be reproduced accurately while the proposition attached to it goes beyond what the judgment establishes. A useful verification tool must therefore avoid collapsing all of these questions into one similarity score.
+
+Large language models make this separation important. Research on legal hallucinations documents failures on verifiable questions about real cases, while audits of commercial legal research systems test reliability in products intended for professional use. These studies motivate independent checking \cite{ref1,ref2}, but their United States results cannot be transferred to Indian practice or to this project's dataset. Retrieval-augmented generation conditions a model on sources; it does not guarantee that every generated citation or quotation is correct. A verifier should show source evidence and uncertainty rather than reproduce that guarantee under a different name \cite{ref3,ref4}.
+
+For Indian case law, citation aliases and document structure create practical difficulties. A judgment may have neutral and SCR citations, while a user's reference uses a commercial reporter absent from the available metadata. PDFs include headnotes, page numbers, cited passages, and sometimes more than one opinion. Treating every numbered fragment as a judgment paragraph would create misleading evidence. The engineering problem addressed here is narrower than a general legal assistant: identify the claimed authority, inspect available metadata and extracted text, and state which mechanical claims can be checked.
+
+\subsection{Problem and Measurable Objectives}
+The input is a citation string with a quotation, a proposition, or both; court, bench size, and paragraph number are optional. The output is an evidence-bearing report with one of four states: consistent, inconsistent, review, or unresolved. Consistent means the submitted mechanical claims match the local extraction. It does not certify the proposition, the passage's status as a holding, or the authority's continuing validity.
+
+The objectives are to (1) ingest a bounded public corpus with document provenance; (2) resolve only metadata-supported aliases; (3) detect controlled quotation and metadata changes while preserving numbers and negations; (4) return original paragraph identifiers and source-linked evidence; and (5) compare the pipeline with three simpler baselines on identical held-out cases. Extraction retention, uncertainty outcomes, retrieval quality, and measured latency complement classification metrics because accuracy alone can conceal weak source coverage.
+
+\subsection{Societal Relevance and Contributions}
+An offline, inspectable tool can help legal-aid workers, students, and advocates perform repetitive source checks without sending draft text to an external model. Public court records provide an alternative to the inaccurate claim that verification always requires a paid database. Nevertheless, a limited English-language Supreme Court sample cannot cover High Courts, regional languages, every reporter, or historical treatment. Unequal corpus coverage can create unequal usefulness: a missing result must not be presented as a finding of fabrication.
+
+The contribution is an implemented verification workflow, not doctrinal reasoning. It includes provenance-aware acquisition, conservative paragraph extraction, deterministic checks, a local CLI and browser interface, and controlled experiments. Phase 1 discussed wrong-voice errors and subsequent treatment as part of the broader problem; ratio/obiter classification, overruling detection, and autonomous drafting remain outside the committed implementation. No commercial system is claimed to lack a capability merely because its implementation is unpublished. The project prioritizes a reproducible demonstration of the agreed subset over unverifiable claims of comprehensive legal safety.
+
+\section{Literature Survey}
+\input{literature.tex}
+
+\section{Proposed Methodology}
+\subsection{Architecture and Data Flow}
+The pipeline comprises acquisition, extraction, indexing, checking, and evidence presentation (Fig.~\ref{fig:pipeline}). Acquisition and experiments are separate commands; an ordinary request never silently downloads a judgment or calls an LLM. The same Python function drives the command-line and browser interfaces, so demonstration and measurement exercise the same engine.
+
+\begin{figure}[t]\centering
+\setlength{\fboxsep}{6pt}
+\fbox{\parbox{0.83\columnwidth}{\centering Public registry metadata + judgment PDFs\\$\downarrow$\\Bounded downloads, hashes, original paragraph extraction\\$\downarrow$\\Metadata-backed citation index\\$\downarrow$\\Court / bench / pinpoint / quote checks\\$\downarrow$\\Evidence paragraphs + uncertainty-aware findings}}
+\caption{Implemented workflow. Optional dense retrieval ranks candidates; it never overrides a failed quotation check.}\label{fig:pipeline}
+\end{figure}
+
+Each corpus row contains a stable ID, case name, decision date, court, known bench size, citation aliases, numbered paragraphs, source and metadata URLs, and PDF hash. Paragraphs retain their original number, text, and source page. The loader rejects malformed records, duplicate IDs, duplicate paragraph identifiers, invalid dates, non-HTTP source links, and invalid metadata types. Aliases normalizing to the same identifier within one record are deduplicated. When an alias identifies different records, the engine abstains rather than choosing arbitrarily.
+
+\subsection{Acquisition and Paragraph Extraction}
+The source is the Indian Supreme Court Judgments collection listed by the AWS Open Data Registry under CC-BY-4.0 \cite{dataset}. The collector selects a deterministic bounded set of metadata keys, downloads English PDFs with retries and timeouts, and caches raw files. The manifest preserves requested and retained counts, errors, retrieval time, source location, selection procedure, and attribution. Downloaded documents are data, not an execution environment. Source-data licensing does not grant reuse rights for project code.
+
+Extraction seeks explicit paragraph markers in the judgment body rather than converting page positions into paragraph numbers. Headnotes and pagination require filtering. Repeated numbering can indicate quoted material, lists, or another opinion, so ambiguous material is rejected or conservatively truncated rather than renumbered. Successful extraction does not prove that every paragraph was captured. A missing pinpoint in an incomplete extraction therefore produces an unresolved finding, not a confident assertion that the paragraph never existed. These precautions trade recall for a more honest evidence trail.
+
+The data card documents retained coverage and known biases. Acquisition targets and usable judgment counts differ: every rejected PDF remains accounted for in the manifest. The corpus is a research slice, not an authoritative citator. A professional user should inspect the original judicial record linked by the tool. The automatic extraction has not received a complete expert paragraph-by-paragraph audit, and controlled experiments cannot substitute for that audit.
+
+\subsection{Citation Resolution and Metadata Checks}
+Canonicalization standardizes case, whitespace, neutral-citation spacing, and punctuation in reporter abbreviations. SCC, AIR, SCR, SCALE, and INSC strings can be represented, but an alias resolves only when actually present in corpus metadata. Parsing SCC does not imply that this SCR/neutral-focused source supplies SCC mappings. The engine does not infer aliases from case-name similarity: common party names and unrelated reporter numbers can yield false matches.
+
+Let $a$ be the canonical citation and $I(a)$ its indexed record set. If $|I(a)|=0$, the result is unresolved; if $|I(a)|>1$, identity is ambiguous. Checks proceed only when $|I(a)|=1$. Known court aliases such as SC are normalized. A mismatched requested court or known bench size generates a discrepancy; missing bench metadata produces review. Bench size alone is not used to infer binding force, which also depends on jurisdiction, later treatment, and the legal issue.
+
+\subsection{Quotation Matching and Candidate Retrieval}
+Text normalization applies Unicode compatibility normalization, case folding, English tokenization, and whitespace normalization while preserving numeric and negation tokens. A quotation must occur as an ordered, contiguous sequence with token boundaries. Consequently, ``restricted'' cannot match inside ``unrestricted'', while deleting ``not'' or changing an amount prevents a match. Punctuation is normalized, so the result concerns normalized text rather than typographic identity with the PDF.
+
+Let $N(q)$ and $N(p)$ be normalized quotation and paragraph token sequences. The check is
+\begin{equation}
+V(q,p)=\mathbf{1}[N(q)\text{ is a contiguous subsequence of }N(p)].
+\end{equation}
+If a pinpoint $n$ is supplied, the engine checks that the quotation occurs there, distinguishing a match elsewhere from a missing or unverified number. A quote can occur more than once; a valid occurrence at the requested pinpoint is sufficient. Candidate retrieval cannot create a false verified pinpoint.
+
+When no contiguous match exists, token coverage can expose a nearby candidate:
+\begin{equation}
+C(q,p)=\frac{|T(q)\cap T(p)|}{\max(1,|T(q)|)},
+\end{equation}
+where $T(x)$ is the set of normalized tokens. The fixed candidate-display threshold is 0.3; it affects evidence presentation, not the exact-match verdict, and is not claimed to be tuned. Evidence is labelled verified, candidate, context, or retrieved. A high-overlap candidate cannot silently become a successful quotation check. A separate proposition always requires human review, even when its accompanying quotation matches. There is no learned entailment classifier or task-specific model training.
+
+\subsection{Selective Quotation and Decision Semantics}
+A heuristic inspects text immediately following a uniquely matched quote and the beginning of the next numbered paragraph for qualification cues such as ``however'', ``unless'', or ``subject to''. Available original context is shown. The finding is called context review because a cue may be irrelevant, and important qualifications may contain no cue. It does not establish deliberate misrepresentation. Multi-paragraph spans, nested quotations, attribution to different speakers, and doctrinal scope remain difficult cases.
+
+Inconsistent means a detectable mechanical discrepancy; review means a proposition, context cue, missing metadata, or extraction uncertainty requires attention. Unresolved means citation identity could not be established uniquely. Consistent means submitted checks passed within the extraction. Stable finding codes and source evidence accompany the state; limitations are part of the response rather than hidden in documentation.
+
+The local server binds to loopback by default, validates input, and renders user text as text rather than executable markup. Ordinary verification makes no model API calls. Public judgments may contain sensitive facts, so public availability is not unlimited ethical permission to aggregate personal information. The project distributes attributed research data, excludes raw download caches and original course PDFs from Git, and recommends source inspection rather than reliance on a colored status alone.
+
+\section{Experimental Results}
+\subsection{Dataset and Computational Environment}
+Table~\ref{tab:data} records the actual run. The manifest and corpus hash identify the data. The requested limit of 2,000 exceeded the 1,873 available selected keys in 2022--2023; 385 records were retained (20.6\%), and 1,488 failures remain logged. Most rejected records had no unambiguous body-paragraph extraction; two PDFs returned HTTP 404. The retained slice contains 62 judgments from 2022 and 323 from 2023. This imbalance reflects extraction and source availability, not a representative sample of Indian disputes. Judgment IDs are split before request variants are constructed, preventing variants of a judgment from appearing in both development and test sets. There is no gradient-based training. Optimizer, learning rate, epochs, and training batch size are not applicable; encoder batch size is an inference setting.
+
+\begin{table}[t]\centering\caption{Corpus and experimental environment.}\label{tab:data}
+\small\begin{tabular}{>{\raggedright\arraybackslash}p{0.42\columnwidth}>{\raggedright\arraybackslash}p{0.48\columnwidth}}\toprule
+Item & Recorded value\\\midrule
+Acquisition requests & \RequestedCount{}\\
+Retained judgments & \CorpusCount{}\\
+Extracted paragraphs & \ParagraphCount{}\\
+Development / test judgments & \DevJudgments{} / \TestJudgments{}\\
+Held-out verification requests & \TestCount{}\\
+CPU & \CpuName{}\\
+RAM & \RamSize{}\\
+GPU & NVIDIA RTX 3050 Laptop, 6 GB\\
+Python / PyTorch & \PythonVersion{} / \TorchVersion{}\\\bottomrule
+\end{tabular}\end{table}
+
+The benchmark is semi-synthetic. Correct requests come from real extracted text; controlled variants alter metadata, a quote, a pinpoint, or local citation availability. Unknown bench sizes cannot provide reliable automatic targets and are excluded from bench mutations. Missing pinpoints in incomplete extraction remain uncertain rather than being relabelled as proven nonexistent paragraphs. Context-omission labels describe a construction rule, not expert legal judgments.
+
+This makes the experiment reproducible but creates a validity limitation: the generator and detector share a mechanical definition of error. High scores show that implemented checks respond to controlled conditions, not that they generalize to naturally occurring hallucinations, accurate quotations paired with false propositions, or adversarial filings. An external benchmark must be independently annotated by qualified reviewers with disagreement resolution. The corpus's acquisition failures and extraction uncertainty are therefore reported alongside classification scores.
+
+\subsection{Metrics and Baselines}
+For triage, the positive label denotes a request constructed to need attention, not a declaration of fabrication. Accuracy is $(TP+TN)/n$, precision $P=TP/(TP+FP)$, recall $R=TP/(TP+FN)$, and $F_1=2PR/(P+R)$. Here $TP$, $TN$, $FP$, and $FN$ are standard confusion counts relative to this label; zero denominators yield zero. Warnings and discrepancies can both trigger triage, while their separate output states remain available in per-case predictions.
+
+Three baselines use identical held-out requests. Citation-only flags absent identifiers but ignores text and metadata. Literal-quote checking adds direct string matching and is sensitive to harmless formatting changes. Normalized-quote checking tolerates formatting but omits the full metadata and context checks. The complete pipeline adds those checks and uncertainty handling. These are transparent engineering ablations, not reimplementations of commercial legal products or state-of-the-art doctrinal reasoning systems.
+
+\begin{table}[t]\centering\caption{Held-out triage on identical controlled requests.}\label{tab:comparison}
+\small\begin{tabular}{lrrrr}\toprule
+Method & Acc. & Prec. & Rec. & $F_1$\\\midrule
+\ComparisonRows
+\bottomrule\end{tabular}\end{table}
+
+The full pipeline obtains \FullFone{} F1 on \TestCount{} requests. Its difference from citation-only checking reflects additional information rather than a newly learned legal representation. A real identifier remains unchanged in wrong-court, wrong-bench, and corrupted-quote requests, leaving an existence-only method unable to flag them. Literal matching also treats formatting variation as an error. Normalization addresses that failure mode, and metadata/pinpoint checks cover claims that quotation matching alone cannot settle.
+
+\subsection{Development Tuning and GPU Retrieval}
+The paragraph-localization experiment compares BM25 with pretrained sentence embeddings. Candidates belong to the resolved judgment; a query is an automatically derived source-paragraph fragment. This is within-document localization, not open-domain legal question answering. Candidate sets and relevance labels are identical for all methods. Recall at rank one and five measures return of the original paragraph; repeated wording can create additional relevant paragraphs not recognized by the automatic label.
+
+BM25 computes
+\begin{equation}
+\sum_{t\in q}\operatorname{IDF}(t)\frac{f(t,p)(k_1+1)}{f(t,p)+k_1(1-b+b|p|/\overline L)},
+\end{equation}
+where $f(t,p)$ is term frequency, $|p|$ paragraph length, $\overline L$ mean candidate length, $k_1$ saturation, and $b$ length normalization. Dense retrieval compares normalized embeddings with cosine similarity. Long paragraphs face a recorded encoder token limit, unlike lexical ranking. Inference batching affects memory and throughput rather than relevance labels.
+
+\begin{table}[t]\centering\caption{Recorded tuning and retrieval measurements.}\label{tab:retrieval}
+\small\begin{tabular}{p{0.55\columnwidth}p{0.35\columnwidth}}\toprule
+Measurement & Value\\\midrule
+\RetrievalRows
+\bottomrule\end{tabular}\end{table}
+
+The BM25 grid in Table~\ref{tab:tuning} uses 344 development queries from 115 judgments. It selects $k_1=0.8$ and $b=0.75$ by maximum development MRR, then recall at one and deterministic parameter tie-breaking. The selection is frozen before evaluating 804 test queries. Perfect BM25 retrieval on this task is unsurprising because queries reuse source tokens and candidates are limited to one judgment; it does not establish semantic search quality.
+
+\begin{table}[t]\centering\caption{BM25 development-only grid; 344 source-fragment queries.}\label{tab:tuning}
+\small\begin{tabular}{rrrr}\toprule
+$k_1$ & $b$ & Recall@1 & MRR\\\midrule
+\TuningRows
+\bottomrule\end{tabular}\end{table}
+
+The GPU comparator uses all-MiniLM-L6-v2 with 384-dimensional normalized embeddings and a 256-token limit. Batch sizes 8, 16, and 32 took 0.334, 0.273, and 0.274 seconds on 128 development paragraphs after warm-up; size 16 was selected for throughput. These single-run timing differences are not statistically conclusive, and no accuracy tuning or fine-tuning of weights occurred. Each corpus paragraph was embedded once; scores were computed within the resolved judgment rather than using a global query--document matrix. The encoder was pinned to the revision recorded in the results and loaded from safe tensor weights without remote model code.
+
+MiniLM returned the source paragraph first for 94.8\% of test fragments, below BM25's 100\%, while recall at five reached 99.9\%. Generic semantic representations and truncation can hurt precise lexical localization; the experiment does not isolate their individual effects. The GPU indexed 13,456 paragraphs in 19.97 seconds. Retrieval inference is optional: these embeddings do not alter the core verifier or its quoted-text decisions.
+
+\subsection{Error Analysis and Reproducibility}
+The full verifier's 51 missed attention cases all came from the 265 selective-quote constructions: 214 received the expected review state (80.8\%). All 540 clean/whitespace requests were accepted, giving $TP=1{,}830$, $TN=540$, $FP=0$, and $FN=51$ for triage. Controlled missing-pinpoint cases received review, and absent local identifiers received unresolved. Four-state agreement was also 97.89\%, but these state distinctions should still be retained: a warning is not a proven legal falsehood. The benchmark includes 270 cases in each common category, 269 wrong-bench cases, 267 wrong-pinpoint cases, and 265 selective-quote cases. The attention-positive class is 77.7\% of the test set, so the class distribution is artificial.
+
+A preliminary integration run exposed a redundant pinpoint escalation and an incorrect retrieval denominator, which were corrected before the recorded final run. The same fixed split was reused; this is a transparent engineering check, not a blind preregistered evaluation. Fixed context cues and the 0.3 candidate-display threshold were not optimized against test F1. A genuinely independent external benchmark remains necessary.
+
+An unknown alias for a real case produces unresolved even if another alias would succeed. A PDF with missing or ambiguous numbered text can prevent a valid quote from matching. Similar but substantively different propositions remain outside the tool's competence. Short or repeated quotes may provide insufficient context for qualification warnings. Accurate text can also reproduce counsel's argument, a lower court's reasoning, or an overruled authority; none is settled by contiguous matching. Consequently, overall triage F1 must not be marketed as the accuracy of legal advice.
+
+Tests cover boundaries, negation and number changes, duplicate aliases, ambiguous identity, unknown metadata, repeated quotes at valid pinpoints, malformed inputs, and typed evidence. CLI and HTTP tests use isolated temporary data. The browser exercises the real engine rather than scripted mock responses. Per-case predictions and metrics are stored as machine-readable files; PDF measurement macros are generated from them to avoid manual transcription.
+
+The repository includes source code, tests, an attributed retained corpus, manifest, experiment commands, demonstration instructions, and editable report source. Raw PDFs and model weights are not committed. Experiments can use the retained corpus without network acquisition; reacquisition depends on upstream availability. Team contributions require truthful attestation rather than invented equal assignments. The rubric requires every team member to explain the entire project and its limitations during the viva, so the demonstration guide includes both successful and unresolved checks.
+
+\section{Conclusion}
+This project implements a bounded Indian citation-integrity workflow that resolves metadata-backed authorities, checks quotations and mechanical metadata claims, returns original paragraph evidence, and distinguishes discrepancies from unresolved or review-required cases. The controlled held-out experiment gives \FullFone{} F1 for the complete pipeline; simpler baselines expose the limits of checking only existence or text. These results support the implemented mechanical behavior, not a claim of legal understanding or equivalent performance on real filings. Corpus incompleteness, PDF ambiguity, English-only processing, automatic labels, and cue-based context warnings remain limitations. Next steps are an independently annotated natural-error benchmark, broader source coverage with verified aliases, opinion-aware extraction, and expert evaluation of proposition support. Until then, the system is an assistive evidence checker rather than a replacement for professional legal review.
+
+\input{bibliography.tex}
+\end{document}

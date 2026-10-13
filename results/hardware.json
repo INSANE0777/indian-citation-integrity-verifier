@@ -1,0 +1,9 @@
+{
+  "cpu": "Intel Core i5-12450HX",
+  "ram_gib": 15.78,
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "gpu_vram_mib": 6144,
+  "driver": "610.62",
+  "os": "Windows 11 Home, build 26200",
+  "measured_with": "Get-CimInstance Win32_Processor, Win32_ComputerSystem; nvidia-smi"
+}

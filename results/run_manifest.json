@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-10-13T13:17:49.128614+00:00",
+  "seed": 42,
+  "corpus_sha256": "ce5203759cf96962569b43d9929c04559bb1dbd39ecc1bae5054347251828584",
+  "code_sha256": {
+    "scripts\\run_experiments.py": "eeedcc10794983a3f2a2345bc288ffd2df4799239c0aa5b8bcf840f603c57323",
+    "src\\citation_verifier\\core.py": "e88517e16c53ff245ab58dce3ce319217f7b343b852147eac8c20d1c259bed15",
+    "src\\citation_verifier\\evaluation.py": "201ca4b0908986d685617fc33b60c9e2e58e26777c9d731b35f05e411f7f71e5"
+  },
+  "corpus_rows": 385,
+  "paragraphs": 13456,
+  "development_cases": 1032,
+  "evaluation_cases": 2421,
+  "dev_judgments": 115,
+  "test_judgments": 270,
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+  "packages": {
+    "torch": "2.6.0+cu124",
+    "sentence-transformers": "6.0.1",
+    "transformers": "5.17.0",
+    "pymupdf": "1.28.2",
+    "requests": "2.34.2"
+  },
+  "gpu_status": "ok",
+  "files": [
+    "evaluation.json",
+    "evaluation_dev.jsonl",
+    "evaluation_test.jsonl",
+    "retrieval.json"
+  ]
+}

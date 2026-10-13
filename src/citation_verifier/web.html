@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Citation Verifier</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #1d2732; background: #f4f6f8; }
+    body { margin: 0; padding: 2rem 1rem; }
+    main { max-width: 54rem; margin: 0 auto; padding: 2rem; background: white; border: 1px solid #d7dfe7; border-radius: .75rem; }
+    h1 { margin-top: 0; }
+    p { line-height: 1.55; }
+    form { display: grid; gap: 1rem; }
+    label { display: grid; gap: .35rem; font-weight: 650; }
+    input, textarea, button { font: inherit; }
+    input, textarea { padding: .65rem; border: 1px solid #9baaba; border-radius: .35rem; }
+    textarea { min-height: 5.5rem; resize: vertical; }
+    button { justify-self: start; padding: .7rem 1rem; border: 0; border-radius: .35rem; color: white; background: #164f78; cursor: pointer; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #f0ad42; outline-offset: 2px; }
+    .notice, .limitations { padding: .8rem; background: #fff4db; border-left: 4px solid #bd7d00; }
+    #result { margin-top: 2rem; }
+    .finding, .evidence { padding: .8rem; border: 1px solid #d7dfe7; border-radius: .35rem; margin: .6rem 0; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin-bottom: 0; }
+    a { color: #124e79; }
+    [hidden] { display: none !important; }
+    @media (max-width: 36rem) { body { padding: .75rem; } main { padding: 1rem; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Citation Verifier</h1>
+    <p>Checks citation metadata and quoted text against the configured local judgment corpus. This is an evidence aid, not legal advice.</p>
+    <!-- CORPUS_STATUS -->
+    <form id="verify-form">
+      <label for="citation">Citation <input id="citation" name="citation" required maxlength="1000" autocomplete="off"></label>
+      <label for="court">Court (optional) <input id="court" name="court" maxlength="20000"></label>
+      <label for="bench_size">Bench size (optional) <input id="bench_size" name="bench_size" type="number" min="1" step="1"></label>
+      <label for="pinpoint">Pinpoint paragraph (optional) <input id="pinpoint" name="pinpoint" type="number" min="1" step="1"></label>
+      <label for="quote">Quoted passage <textarea id="quote" name="quote" maxlength="20000"></textarea></label>
+      <label for="proposition">Proposition to review (optional) <textarea id="proposition" name="proposition" maxlength="20000"></textarea></label>
+      <button type="submit">Verify against local corpus</button>
+    </form>
+    <p id="message" role="status" aria-live="polite"></p>
+    <section id="result" aria-labelledby="result-title" hidden>
+      <h2 id="result-title">Result</h2>
+      <p id="status"></p>
+      <div id="findings"></div>
+      <h3>Evidence</h3>
+      <div id="evidence"></div>
+      <h3>Limitations</h3>
+      <ul id="limitations" class="limitations"></ul>
+    </section>
+  </main>
+  <script>
+    const form = document.querySelector('#verify-form');
+    const message = document.querySelector('#message');
+    const result = document.querySelector('#result');
+    const textField = (name) => form.elements[name].value.trim();
+    const addText = (parent, tag, text) => {
+      const element = document.createElement(tag);
+      element.textContent = text;
+      parent.append(element);
+      return element;
+    };
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const request = { citation: textField('citation') };
+      for (const name of ['court', 'quote', 'proposition']) if (textField(name)) request[name] = textField(name);
+      for (const name of ['bench_size', 'pinpoint']) if (textField(name)) request[name] = Number(textField(name));
+      if (!request.quote && !request.proposition) {
+        message.textContent = 'Enter a quote, a proposition, or both.';
+        result.hidden = true;
+        return;
+      }
+      message.textContent = 'Checking the local corpus…';
+      try {
+        const response = await fetch('/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(request)
+        });
+        const report = await response.json();
+        if (!response.ok) throw new Error(report.error || 'The request could not be verified.');
+        document.querySelector('#status').textContent = `Status: ${report.status}`;
+        const findings = document.querySelector('#findings');
+        findings.replaceChildren();
+        for (const item of report.findings || []) {
+          const card = document.createElement('article');
+          card.className = 'finding';
+          addText(card, 'strong', `${item.severity}: ${item.code}`);
+          addText(card, 'p', item.message);
+          findings.append(card);
+        }
+        const evidence = document.querySelector('#evidence');
+        evidence.replaceChildren();
+        for (const item of report.evidence || []) {
+          const card = document.createElement('article');
+          card.className = 'evidence';
+          addText(card, 'strong', `Paragraph ${item.number}${item.page ? `, page ${item.page}` : ''} (${item.match_type})`);
+          addText(card, 'pre', item.text);
+          if (item.source_url) {
+            const link = addText(card, 'a', 'Open source judgment');
+            link.href = item.source_url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+          }
+          evidence.append(card);
+        }
+        const limitations = document.querySelector('#limitations');
+        limitations.replaceChildren();
+        for (const item of report.limitations || []) addText(limitations, 'li', item);
+        addText(limitations, 'li', 'The local corpus may be incomplete; an unresolved citation is not proof of fabrication.');
+        addText(limitations, 'li', 'Text overlap and lexical retrieval do not establish legal entailment or binding force.');
+        result.hidden = false;
+        message.textContent = 'Check complete.';
+      } catch (error) {
+        result.hidden = true;
+        message.textContent = error instanceof TypeError
+          ? 'Cannot reach the local verifier. Ensure the server is running and the corpus is available.'
+          : error.message;
+      }
+    });
+  </script>
+</body>
+</html>

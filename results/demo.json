@@ -1,0 +1,295 @@
+{
+  "altered-quote.json": {
+    "status": "inconsistent",
+    "quote_match": "partial",
+    "match": {
+      "id": "2022INSC6",
+      "case_name": "RAJENDRA BHAGAT v. STATE OF JHARKHAND & ANR.",
+      "court": "Supreme Court of India",
+      "date": "2022-01-03",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 1 S.C.R. 473",
+        "2022 INSC 6"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_1_473_478.json",
+      "sha256": "7f45e5861bb0d444c38c3021aee993866d09ca04b8608ed1df9e9ee3eb80c4e1",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [
+      {
+        "code": "PINPOINT_QUOTE_MISMATCH",
+        "severity": "error",
+        "message": "The quote is not present in the requested pinpoint paragraph.",
+        "evidence": {
+          "pinpoint": 1
+        }
+      },
+      {
+        "code": "QUOTE_MISMATCH",
+        "severity": "error",
+        "message": "The supplied quote was not found as a normalized contiguous passage in this judgment."
+      }
+    ],
+    "evidence": [
+      {
+        "number": 1,
+        "page": 2,
+        "text": "Leave granted.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+        "match_type": "candidate"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  },
+  "consistent.json": {
+    "status": "consistent",
+    "quote_match": "exact",
+    "match": {
+      "id": "2022INSC6",
+      "case_name": "RAJENDRA BHAGAT v. STATE OF JHARKHAND & ANR.",
+      "court": "Supreme Court of India",
+      "date": "2022-01-03",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 1 S.C.R. 473",
+        "2022 INSC 6"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_1_473_478.json",
+      "sha256": "7f45e5861bb0d444c38c3021aee993866d09ca04b8608ed1df9e9ee3eb80c4e1",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [],
+    "evidence": [
+      {
+        "number": 1,
+        "page": 2,
+        "text": "Leave granted.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+        "match_type": "verified"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  },
+  "missing-pinpoint.json": {
+    "status": "review",
+    "quote_match": "exact",
+    "match": {
+      "id": "2022INSC6",
+      "case_name": "RAJENDRA BHAGAT v. STATE OF JHARKHAND & ANR.",
+      "court": "Supreme Court of India",
+      "date": "2022-01-03",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 1 S.C.R. 473",
+        "2022 INSC 6"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_1_473_478.json",
+      "sha256": "7f45e5861bb0d444c38c3021aee993866d09ca04b8608ed1df9e9ee3eb80c4e1",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [
+      {
+        "code": "PINPOINT_UNRESOLVED",
+        "severity": "warning",
+        "message": "The pinpoint paragraph could not be verified from this extraction.",
+        "evidence": {
+          "requested": 999
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "number": 1,
+        "page": 2,
+        "text": "Leave granted.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+        "match_type": "verified"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  },
+  "request.json": {
+    "status": "review",
+    "quote_match": "exact",
+    "match": {
+      "id": "2022INSC6",
+      "case_name": "RAJENDRA BHAGAT v. STATE OF JHARKHAND & ANR.",
+      "court": "Supreme Court of India",
+      "date": "2022-01-03",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 1 S.C.R. 473",
+        "2022 INSC 6"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_1_473_478.json",
+      "sha256": "7f45e5861bb0d444c38c3021aee993866d09ca04b8608ed1df9e9ee3eb80c4e1",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [
+      {
+        "code": "PROPOSITION_REVIEW",
+        "severity": "warning",
+        "message": "A matching quote does not establish that the separately supplied proposition is supported; legal review is required."
+      }
+    ],
+    "evidence": [
+      {
+        "number": 1,
+        "page": 2,
+        "text": "Leave granted.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+        "match_type": "verified"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  },
+  "selective-quote.json": {
+    "status": "review",
+    "quote_match": "exact",
+    "match": {
+      "id": "2022INSC1127",
+      "case_name": "MAHARASHTRA STATE BOARD OF WAKFS v. SHAIKH YUSUF BHAI CHAWLA & ORS.",
+      "court": "Supreme Court of India",
+      "date": "2022-10-20",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 12 S.C.R. 482",
+        "2022 INSC 1127"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_12_482_590_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_12_482_590.json",
+      "sha256": "d44e2aafdee8fce2cc9b8b1748eba9b3579a0c804ebed430abb3728abea696b6",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [
+      {
+        "code": "CONTEXT_REVIEW",
+        "severity": "warning",
+        "message": "The quote is followed by qualifying language; inspect the full paragraph before relying on it."
+      }
+    ],
+    "evidence": [
+      {
+        "number": 6,
+        "page": 10,
+        "text": "It would appear that there was a meeting held by the Law and Judiciary Department to discuss the problems of the Wakfs.A decision was taken on 11.08.2004 to constitute a Committee of the Charity Commissioner and two members of the Board. The following may be noted at this juncture itself as the result of the meeting which took place on 11.08.2004: “Meeting to discuss the problems of Wakfs cases was held today i.e., on the 11.8.2004 at 12.00 noon under the Chairmanship of Hon’ble Minister (Law). The following dignitaries and officers of Government were present in the chamber of Hon’ble Minister (Law):- (1) Hon’ble Minister (Law) (2) Hon’ble Minister, Aukaf (3) Chairman, Wakf Board, Mumbai (4) HafeezbhaiDhature, M.L.A. & Member of Wakf Board. (5) Principal Secretary & S.L.A. L.& J.D. (6) Charity Commissioner, M.S.Worli, Mumbai (7) Executive Officer, Wakf Board, Mumbai (8) Jt. Secy. R&F.D. (9) shri Yusuf Muchhala, Sr. Counsel, High Court. (10) Shri Viren Merchant, Chartered Accountant (11) Jt. Secy L& J.D. (Shri Gomare) (12) D.S. (Law L& J.D. (Shri Bangale), (13) U.S. (Law), L& J.D. (Shri Patil) MAHARASHTRA STATE BOARD OF WAKFS v. SHAIKH YUSUF BHAI CHAWLA & ORS. A B C D E F G H SUPREME COURT REPORTS [2022] 12 S.C.R. So many writ petitions have been filed before the Hon’ble High Court challenging the formation of Wakf Board. The Hon’ble High Court admitted the writ petitions and granted interim relief in favour of the petitioners restraining the Charity Commissioner from transferring the muslim trusts to Wakf Board and granted stay on the Circular dated 24.7.03 issued by the Charity Commissioner. The Wakf Board is also restrained by the Hon’ble High Court from collecting the contribution from the petitioners in these writ petitions. On the basis of the same, Association for Protection of Wakfs and Trusts has made representation to the Government with a request to; (1) direct the Wakf Board to cancel the notification declaring the list of Wakf which are published on 13.11.03, the said notification is not only full of mistakes but highly malicious. (2) direct the Wakf Board to have a fresh survey done properly ascertaining Shiya and Sunni Wakf Boards and have the Survey monitored by a competent and judicious senior officer. (3) form a fresh Wakf Board after proper survey is concluded. In the meeting it was discussed as to whether the Wakf Board is consituted legally as per the provisions of Wakf Act, 1995 and whether it is possible for the Government and the Wakf Board to have a fresh survey ascertaining Shiya Wakf and Sunni Wakf and whether it is necessary to form a fresh the Wakf Board. Following resolutions have been passed in the meeting: (1) It is decided to constituted a committed under the Chairmanship of Charity Commissioner including the two members from the Wakf Board and two member of Charity Commissioner. This committee will study the work of charity organisations and Wakf Board constituted in Andhra Pradesh, Karnataka and Uttar Pradesh and decide which of the muslim trust registered under the Bombay Public Trusts Act, 1950 are covered under the Wakf Act and which comes under the Bombay Public Trusts Act and that which of the Wakfs are Shiya Wakfs and Sunni Wakfs. (2) It is not legally possible to extend the period of notification after 13.11.04. But the concerned trusts shall make an application to the said Committee stating their objections, reservations, if any. A B C D E F G H (3) Wakf Board will give an advertisement in the newspapers to requesting the muslim trusts and wakfs to give information stating that whether they are trust or Wakf and if it is a wakf, whether it is a Shiya Wakf or Sunni Wakf and the details of income of such Wakfs. (4) Shri Yusuf Muchhala, Sr. Counsel High Court may submit the list of Shiya Wakfs, Sunni Wakfs and Trusts belonging to their Association to the Committee constituted under the Chairmanship of Charity Commissioner. He made his submissions without prejudice to the rights and contentions of the petitioners in diverse writ petitions pending in the High Court at Judicature at Bombay, challenging the constitution of the wakfs Board, the survey commissioner report and the list of Wakfs published by Maharashtra Wakf Board on 13.11.2003. (5) Mr. Muchhnala will persuade their clients (petitioners) to co- operative with the said committee formed by the State Government and his clients will co-operative without prejudice to their rights and contentions on the issues in the pending writ petitions. (6) To bring uniformity in respect of the contribution collected for administrative fund, the Wakf Board may take administrative fund contribution annually at a rate of 2% for the gross annual income or of the gross annual collection or receipt as the same way in which the public trust administrative fund is being collected by the Charity Commissioner. (7) The Wakf Board shall not take any further action in respect of the notification declaring the list of wakfs which was published on 13.11.2003 until the report of the said Committee is submitted to the State Government.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_12_482_590_EN.pdf",
+        "match_type": "verified"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  },
+  "unresolved.json": {
+    "status": "unresolved",
+    "match": null,
+    "findings": [
+      {
+        "code": "NOT_IN_CORPUS",
+        "severity": "warning",
+        "message": "The citation was not found in this local corpus; this does not establish that the case is fabricated."
+      }
+    ],
+    "evidence": [],
+    "limitations": [
+      "The bounded local corpus is not a completeness oracle."
+    ]
+  },
+  "wrong-court.json": {
+    "status": "inconsistent",
+    "quote_match": "exact",
+    "match": {
+      "id": "2022INSC6",
+      "case_name": "RAJENDRA BHAGAT v. STATE OF JHARKHAND & ANR.",
+      "court": "Supreme Court of India",
+      "date": "2022-01-03",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 1 S.C.R. 473",
+        "2022 INSC 6"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_1_473_478.json",
+      "sha256": "7f45e5861bb0d444c38c3021aee993866d09ca04b8608ed1df9e9ee3eb80c4e1",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [
+      {
+        "code": "COURT_MISMATCH",
+        "severity": "error",
+        "message": "The requested court does not match corpus metadata.",
+        "evidence": {
+          "requested": "Delhi High Court",
+          "observed": "Supreme Court of India"
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "number": 1,
+        "page": 2,
+        "text": "Leave granted.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_1_473_478_EN.pdf",
+        "match_type": "verified"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  },
+  "wrong-pinpoint.json": {
+    "status": "inconsistent",
+    "quote_match": "exact",
+    "match": {
+      "id": "2022INSC1045",
+      "case_name": "SHRI CHATRAPATI SHIVAJI GAUSHALA v. STATE OF MAHARASHTRA AND OTHERS",
+      "court": "Supreme Court of India",
+      "date": "2022-09-30",
+      "bench_size": 2,
+      "citations": [
+        "[2022] 13 S.C.R. 1129",
+        "2022 INSC 1045"
+      ],
+      "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_13_1129_1140_EN.pdf",
+      "metadata_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/metadata/json/year=2022/2022_13_1129_1140.json",
+      "sha256": "9e07510d0053df34c88b565862ddf3b247f03049a1415ad02d5e173c18c56708",
+      "paragraph_numbering_complete": false
+    },
+    "findings": [
+      {
+        "code": "PINPOINT_QUOTE_MISMATCH",
+        "severity": "error",
+        "message": "The quote is not present in the requested pinpoint paragraph.",
+        "evidence": {
+          "pinpoint": 1
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "number": 2,
+        "page": 3,
+        "text": "This appeal arises from a judgment and order dated 17 October 2019 of a Single Judge of the Aurangabad Bench of the High Court of Judicature at Bombay. SHRI CHATRAPATI SHIVAJI GAUSHALA v. STATE OF MAHARASHTRA AND OTHERS A B C D E F G H SUPREME COURT REPORTS [2022] 13 S.C.R.",
+        "source_url": "https://indian-supreme-court-judgments.s3.ap-south-1.amazonaws.com/data/pdf/year=2022/english/2022_13_1129_1140_EN.pdf",
+        "match_type": "verified"
+      }
+    ],
+    "limitations": [
+      "Text overlap is not a determination of legal meaning or binding force."
+    ]
+  }
+}

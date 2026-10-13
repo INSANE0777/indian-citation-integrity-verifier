@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "indian-citation-verifier"
+version = "1.0.0"
+description = "Evidence-first, local Indian judgment citation integrity checks"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+test = ["pytest>=8", "requests>=2.31"]
+ingest = ["requests>=2.31", "pymupdf>=1.24"]
+report = ["pymupdf>=1.24"]
+gpu = ["torch>=2.6", "sentence-transformers>=3", "huggingface-hub>=0.24"]
+
+[project.scripts]
+citation-verifier = "citation_verifier.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+citation_verifier = ["web.html"]
